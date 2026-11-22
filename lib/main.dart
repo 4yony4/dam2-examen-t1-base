@@ -1,27 +1,24 @@
+// Rama `solo-ad`: la interfaz ya está hecha. Tu trabajo es la capa de datos (lib/datos/).
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
-import 'datos/repositorio_memoria.dart';
-import 'pantallas/lista_material.dart';
+import 'datos/repositorio_firestore.dart';
+import 'firebase_options.dart';
+import 'pantallas/app_solo_ad.dart';
 
-// Cuando la capa de datos de AD funcione, se cambia a Firestore aquí (apartado AD-1).
-final repo = RepositorioMemoria(iniciales: materialDeEjemplo);
-
-void main() {
-  runApp(const PrestamosTallerApp());
-}
-
-class PrestamosTallerApp extends StatelessWidget {
-  const PrestamosTallerApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  // AD-1: conexión. Ya está aquí lo mínimo; el apartado AD-1 pide más (lee el enunciado).
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await FirebaseAuth.instance.signInAnonymously();
+  final repo = RepositorioFirestore(FirebaseFirestore.instance);
+  runApp(
+    MaterialApp(
       title: 'Préstamos del taller',
       theme: ThemeData(colorSchemeSeed: Colors.indigo, useMaterial3: true),
-      home: Scaffold(
-        appBar: AppBar(title: const Text('Material del taller')),
-        body: ListaMaterial(repo: repo),
-      ),
-    );
-  }
+      home: InicioSoloAd(material: repo, prestamos: repo),
+    ),
+  );
 }
